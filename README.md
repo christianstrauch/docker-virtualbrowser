@@ -17,7 +17,7 @@ or use the _Build image_ functionality in Portainer and paste the contents of Do
 ## Use
 Best way to do this is using compose. This compose file assumes you have created an isolated network called "internal". The beauty of that is that you can attach other containers to it, such as Guacamole, and a reverse proxy. This way, you only need to expose the reverse proxy's port, (e.g., 443,) reverse proxy to Guacamole, and have Guacamole access your internal VNC, RDP and SSH resources. 
 The "vb" network only serves to provide access from the container to the surrounding network (as "internal" is isolated in my case.)
-```
+```yaml
 services:
   virtualbrowser:
     image: virtualbrowser:minimal
