@@ -2,7 +2,11 @@ FROM alpine:latest
 EXPOSE 5901
 RUN apk add --no-cache tigervnc firefox font-liberation openbox xrandr python3 dbus-x11 py-xdg
 RUN mkdir -p $HOME/.vnc
+RUN mkdir -p /cacerts
 RUN echo $'#!/bin/ash\n\
+ echo "{ \\"policies\\": { \\"Certificates\\": { \\"ImportEnterpriseRoots\\": true, \\"Install\\": [" > /usr/lib/firefox/distribution/policies.json\n\
+ ls -1 --color=never /cacerts/*.pem /cacerts/*.crt 2> /dev/null | sed -e \'s/^\(.*\)$/"\\1",/g\' >> /usr/lib/firefox/distribution/policies.json\n\
+ echo "\\"\\" ] } } }" >> /usr/lib/firefox/distribution/policies.json\n\
  if [ \'$VNC_PASSWORD\' = \'\' ]\n\
  then\n\
   Xvnc :1 -SecurityTypes=None\n\
@@ -82,4 +86,5 @@ RUN echo $'\
 </openbox_menu>\n\
 ' > /etc/openbox/menu.xml
 VOLUME /etc/openbox
+VOLUME /cacerts
 ENTRYPOINT ["/entrypoint.sh"]
