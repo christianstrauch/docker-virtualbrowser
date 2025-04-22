@@ -11,7 +11,7 @@ Scripts and configuration files are created by the Dockerfile while building the
 ## Build
 Download the Dockerfile into some folder on a machine that runs docker and execute
 ```
-docker build -t virtualbrowser:minimal .
+docker build -t virtualbrowser:latest .
 ```
 or use the _Build image_ functionality in Portainer and paste the contents of Dockerfile into that.
 ## Use
@@ -20,7 +20,7 @@ The "vb" network only serves to provide access from the container to the surroun
 ```yaml
 services:
   virtualbrowser:
-    image: virtualbrowser:minimal
+    image: virtualbrowser:latest
     hostname: virtualbrowser
     # Not needed in my case as I'm routing traffic through the "internal" network
     # ports:
@@ -33,6 +33,7 @@ services:
       vb:
     volumes:
       - openbox_config:/etc/openbox
+      - cacerts:/cacerts:ro
     environment:
       VNC_PASSWORD: PutYourVncPasswordHere
 
@@ -40,6 +41,12 @@ volumes:
   openbox_config:
     # If you want the config volume to live & die with this stack, you can remove the "external" line. 
     # In case you keep the volume external, don't forget to create it before composing.
+    external: true
+  cacerts:
+    # Now this one 100% makes sense to have external.
+    # You want to create it beforehands and then add any non-public CA certificates to it.
+    # entrypoint.sh will check for files ending in .crt or .pem in that folder,
+    # and add have Firefox trust them. 
     external: true
 
 networks:
